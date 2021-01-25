@@ -1,0 +1,44 @@
+    .holder_content {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        text-align: center;
+    }
+    
+    .entry,
+    .holder,
+    .inputTravel,
+    #app {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .holder {
+        display: flex;
+        justify-content: center;
+    }
+    
+    .travel {
+        margin: 30px;
+    }
+    
+    .inputTravel {
+        align-items: center;
+    }
+    
+    .TravelContent {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin: 10px;
+    }
+    
+    #app {
+        align-items: center;
+    }
+    
+    .TravelInformation {
+        justify-content: center;
+        align-items: center;
+    }
