@@ -24,19 +24,18 @@ app.use(cors());
 app.use(express.static('dist'));
 
 TravelData = {};
-clientData = {};
 
 app.post('/RecieveClientData', (req, res) => {
-    clientData['location'] = req.body.location;
+    TravelData['location'] = req.body.location;
     res.send('ok');
 });
 
-app.get('/getImageLocation', function(req, res) {
+app.get('/getImageLocation', async function(req, res) {
 
     //console.log(baseUrl + API_KEY + "&lang=auto&url=" + request.body.url);
-    const urlPixaBay = 'https://pixabay.com/api/?key=' + API_KEYPIXABAY + "&q=" + clientData.location + '&image_type=all&category=places'
+    const urlPixaBay = 'https://pixabay.com/api/?key=' + API_KEYPIXABAY + "&q=" + TravelData.location + '&image_type=all&category=places'
     console.log(urlPixaBay);
-    fetch(urlPixaBay)
+    await fetch(urlPixaBay)
         .then(response => response.json())
         .then(response => {
             const result1 = response.hits[0].webformatURL;
@@ -51,13 +50,13 @@ app.get('/getImageLocation', function(req, res) {
 });
 
 
-app.get('/getCoordinates', function(req, res) {
+app.get('/getCoordinates', async function(req, res) {
     console.log("codigo")
 
     //console.log(baseUrl + API_KEY + "&lang=auto&url=" + request.body.url);
-    const urlGeoNames = 'http://api.geonames.org/searchJSON?q=' + clientData.location + '&maxRows=1&fuzzy=0.6&username=' + USERNAME_GEONAMES;
+    const urlGeoNames = 'http://api.geonames.org/searchJSON?q=' + TravelData.location + '&maxRows=1&fuzzy=0.6&username=' + USERNAME_GEONAMES;
     console.log(urlGeoNames)
-    fetch(urlGeoNames)
+    await fetch(urlGeoNames)
         .then(response => response.json())
         .then(response => {
             TravelData['lng'] = response.geonames[0].lng
@@ -69,15 +68,15 @@ app.get('/getCoordinates', function(req, res) {
         })
 });
 
-app.get('/getWeatherData', function(req, res) {
+app.get('/getWeatherData', async function(req, res) {
     //console.log(baseUrl + API_KEY + "&lang=auto&url=" + request.body.url);
     const urlWeatherBit = 'https://api.weatherbit.io/v2.0/current?lat=' + TravelData.lat + '&lon=' + TravelData.lng + '&key=' + API_WEATHERBIT + '&include=minutely';
     console.log(urlWeatherBit)
-    fetch(urlWeatherBit)
+    await fetch(urlWeatherBit)
         .then(response => response.json())
         .then(response => {
             TravelData['wheather'] = response.data[0].weather.description
-            TravelData['Temperature'] = response.data[0].temp
+            TravelData['temperature'] = response.data[0].temp
         })
         .catch(error => {
             res.send(JSON.stringify({ error: error.message }));
@@ -89,11 +88,11 @@ app.get('/', function(req, res) {
 });
 
 
-app.get('/GetTravelInfo', (req, res) => {
-    res.send(TravelData);
+app.post('/GetTravelInfo', async function(req, res) {
+    await res.send(TravelData);
 });
 
 
 app.listen(8081, () => {
-    console.log('Example app listening on port 8081!')
-})
+    console.log('Example app listening on port 8081!');
+});
