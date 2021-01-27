@@ -28,7 +28,7 @@ If *Node* is installed, then you can use the *Node Package Manager (npm)* to ins
 ```
 npm install
 ```
-When those packages have installed, use the following commands to run the development server, build the production, and start the express server, respectively. Note that *dev* runs *webpack-dev-server* and has hot-loading enabled.
+When those packages have installed, use the following commands to run the development server, build the production, run some basic tests and start the express server, respectively. Note that *dev* runs *webpack-dev-server* and has hot-loading enabled.
 
 ```
 npm run build-dev
