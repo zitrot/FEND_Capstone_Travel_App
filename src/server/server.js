@@ -25,22 +25,22 @@ app.use(express.static('dist'));
 
 TravelData = {};
 
-app.post('/RecieveClientData', (req, res) => {
+app.post('/RecieveClientData', async(req, res) => {
     TravelData['location'] = req.body.location;
-    res.send('ok');
+    TravelData['days'] = req.body.days;
+    res.send({ state: 'ok' });
 });
 
 app.get('/getImageLocation', async function(req, res) {
 
     //console.log(baseUrl + API_KEY + "&lang=auto&url=" + request.body.url);
     const urlPixaBay = 'https://pixabay.com/api/?key=' + API_KEYPIXABAY + "&q=" + TravelData.location + '&image_type=all&category=places'
-    console.log(urlPixaBay);
-    await fetch(urlPixaBay)
+    fetch(urlPixaBay)
         .then(response => response.json())
         .then(response => {
             const result1 = response.hits[0].webformatURL;
-            console.log(result1);
             TravelData['url'] = result1;
+            res.send(response)
 
 
         })
@@ -55,12 +55,12 @@ app.get('/getCoordinates', async function(req, res) {
 
     //console.log(baseUrl + API_KEY + "&lang=auto&url=" + request.body.url);
     const urlGeoNames = 'http://api.geonames.org/searchJSON?q=' + TravelData.location + '&maxRows=1&fuzzy=0.6&username=' + USERNAME_GEONAMES;
-    console.log(urlGeoNames)
-    await fetch(urlGeoNames)
+    fetch(urlGeoNames)
         .then(response => response.json())
         .then(response => {
             TravelData['lng'] = response.geonames[0].lng
             TravelData['lat'] = response.geonames[0].lat
+            res.send(response)
 
         })
         .catch(error => {
@@ -68,17 +68,21 @@ app.get('/getCoordinates', async function(req, res) {
         })
 });
 
+
 app.get('/getWeatherData', async function(req, res) {
     //console.log(baseUrl + API_KEY + "&lang=auto&url=" + request.body.url);
-    const urlWeatherBit = 'https://api.weatherbit.io/v2.0/current?lat=' + TravelData.lat + '&lon=' + TravelData.lng + '&key=' + API_WEATHERBIT + '&include=minutely';
-    console.log(urlWeatherBit)
-    await fetch(urlWeatherBit)
+    const urlWeatherBit = 'https://api.weatherbit.io/v2.0/forecast/daily?lat=' + TravelData.lat + '&lon=' + TravelData.lng + '&days=' + TravelData.days + '&key=' + API_WEATHERBIT;
+    console.log(urlWeatherBit);
+    fetch(urlWeatherBit)
         .then(response => response.json())
         .then(response => {
-            TravelData['wheather'] = response.data[0].weather.description
-            TravelData['temperature'] = response.data[0].temp
+            TravelData['wheather'] = response.data[0].weather.description;
+            TravelData['temperature'] = response.data[0].temp;
+            console.log(response);
+            res.send(response);
         })
         .catch(error => {
+            console.log(error.message);
             res.send(JSON.stringify({ error: error.message }));
         })
 });
@@ -88,8 +92,8 @@ app.get('/', function(req, res) {
 });
 
 
-app.post('/GetTravelInfo', async function(req, res) {
-    await res.send(TravelData);
+app.get('/GetTravelInfo', function(req, res) {
+    res.send(TravelData);
 });
 
 
